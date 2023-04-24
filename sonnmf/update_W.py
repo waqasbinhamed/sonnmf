@@ -110,7 +110,7 @@ def admm(W, Mj, new_z, hj, j, _lam, itermax=1000):
         new_z = (rho * (new_wf + new_w0) + rho * np.sum(new_wi_arr, axis=1, keepdims=True) + yf + y0
                  + np.sum(yi_arr, axis=1, keepdims=True)) / (rho * (2 + num_edges))
 
-        if np.linalg.norm(new_z - z) / np.linalg.norm(z) < W_TOL:
+        if np.linalg.norm(new_z - z) / (np.linalg.norm(z) + EPS) < W_TOL:
             break
 
         new_yf = yf + rho * (new_wf - new_z)
@@ -139,7 +139,22 @@ def prox_avg(W, Mj, hj, j, _lam):
     return (prox_w_sum + prox_in) / rank
 
 
-def update_matrix   (M, W, H, _lam, method='proximal_averaging', iters=1):
+def without_nonneg_restriction(W, Mj, hj, j, _lam):
+    _, rank = W.shape
+    hj_norm_sq = hj @ hj.T
+
+    w_bar = (Mj @ hj.T) / (hj_norm_sq + EPS)
+    prox_w_sum = 0
+    for k in range(rank):
+        if k != j:
+            prox_w_sum += prox(_lam / (hj_norm_sq * rank + EPS), W[:, k: k + 1], w_bar)
+
+    # prox_in = non_neg(w_bar)
+    # return (prox_w_sum + prox_in) / rank
+    return prox_w_sum / (rank - 1)
+
+
+def update_matrix(M, W, H, _lam, method='proximal_averaging', iters=1):
     _, rank = W.shape
 
     # TODO: add convergence check
@@ -157,6 +172,8 @@ def update_matrix   (M, W, H, _lam, method='proximal_averaging', iters=1):
                 W[:, j: j + 1] = wj = subgrad(W, Mj, wj, hj, j, _lam)
             elif  method == 'nesterov_smoothing':
                 W[:, j: j + 1] = wj = nesterov_smoothing(W, Mj, wj, hj, j, _lam)
+            elif method == 'without_nonneg_restriction':
+                W[:, j: j + 1] = wj = without_nonneg_restriction(W, Mj, hj, j, _lam)
             else:
                 raise ValueError('Unknown method specified for solving the w_j subproblem. Please specify one of the following: proximal_averaging, admm, subgradient, nesterov_smoothing')
 
