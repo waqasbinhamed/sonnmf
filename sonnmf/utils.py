@@ -62,3 +62,8 @@ def sonnmf_post_it(M, W, H, it, fscores, gscores, lambda_vals, early_stop, verbo
 def save_results(filepath, W, H, fscores, gscores, lambda_vals):
     with open(filepath, 'wb') as fout:
         np.savez_compressed(fout, W=W, H=H, fscores=fscores, gscores=gscores, lambda_vals=lambda_vals)
+
+
+def load_results(filepath):
+    data = np.load(filepath)
+    return data['W'], data['H'], data['fscores'], data['gscores'], data['lambda_vals']

@@ -1,0 +1,8 @@
+Metadata-Version: 2.1
+Name: sonnmf
+Version: 0.21
+Summary: Python implementation of NMF-SON.
+Home-page: https://github.com/waqasbinhamed/sonnmf
+Author: Waqas Bin Hamed
+Author-email: waqasbinhamed@gmail.com
+Requires-Python: >=3.6.0
