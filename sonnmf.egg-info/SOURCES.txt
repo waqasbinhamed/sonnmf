@@ -1,6 +1,8 @@
 README.md
 setup.py
 sonnmf/__init__.py
+sonnmf/expanded.py
+sonnmf/gpt.py
 sonnmf/main.py
 sonnmf/update_H.py
 sonnmf/update_W.py
