@@ -31,9 +31,6 @@ def sonnmf(M, W, H, lam=0.0, gamma=0.0, itermin=100, itermax=10000, H_update_ite
     - total_scores: an array of the total objective function value at each iteration
     """
 
-    m, n = M.shape
-    _, rank = W.shape
-
     fscores, gscores, hscores, total_scores = ini_sonnmf(itermax)
 
     it = 0
@@ -42,12 +39,12 @@ def sonnmf(M, W, H, lam=0.0, gamma=0.0, itermin=100, itermax=10000, H_update_ite
     for it in range(1, itermax + 1):
         # update H
         if accelerate_H_update:
-            H = precomputed_vars_and_nesterov_acc(H, H_update_iters, M, W, it)
+            H = precomputed_vars_and_nesterov_acc(H, H_update_iters, M, W)
         else:
             H = base_H_func(H, H_update_iters, M, W)
 
         # update W
-        base_W(H, M, W, W_update_iters, gamma, lam, m, rank)
+        base_W(H, M, W, W_update_iters, gamma, lam)
 
         calculate_scores_and_report(H, M, W, fscores, gamma, gscores, hscores, it, lam, total_scores, verbose)
 
