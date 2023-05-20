@@ -9,8 +9,9 @@ def prox(mu, c, v):
     return v - vc / max(1, np.linalg.norm(vc / mu))
 
 
-def base(H, M, W, W_update_iters, gamma, lam, m, rank):
-    for wit in range(W_update_iters):
+def base(H, M, W, W_update_iters, gamma, lam):
+    m, rank = W.shape
+    for it in range(W_update_iters):
         for j in range(rank):
             hj = H[j:j + 1, :]
             hj_norm_sq = hj @ hj.T
