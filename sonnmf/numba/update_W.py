@@ -5,25 +5,25 @@ from numba import jit, prange
 EPS = 1e-16
 
 
-@jit(nopython=True, parallel=True)
+@jit(nopython=True)
 def rowwise_median(matrix):
     """Compute the median value for each row in the matrix."""
     num_rows = matrix.shape[0]
     medians = np.zeros(num_rows)
 
-    for i in prange(num_rows):
+    for i in range(num_rows):
         medians[i] = np.median(matrix[i])
 
     return medians.reshape(-1, 1)
 
 
-@jit(nopython=True, parallel=True)
+@jit(nopython=True)
 def prox(mu, c, v):
     vc = v - c
     return v - vc / max(1, np.linalg.norm(vc / mu))
 
 
-@jit(nopython=True, parallel=True)
+@jit(nopython=True)
 def base(H, M, W, W_update_iters, gamma, lam):
     m, rank = W.shape
     for it in range(W_update_iters):

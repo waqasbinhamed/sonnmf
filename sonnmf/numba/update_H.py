@@ -2,7 +2,7 @@ import numpy as np
 from numba import jit, prange
 
 
-@jit(nopython=True, parallel=True)
+@jit(nopython=True)
 def proj_simplex_1d(y):
     n = y.shape[0]
     sorted_y = np.sort(y)[::-1]
@@ -14,22 +14,22 @@ def proj_simplex_1d(y):
     return result
 
 
-@jit(nopython=True, parallel=True)
+@jit(nopython=True)
 def proj_simplex(y):
     result = np.empty_like(y)
-    for i in prange(y.shape[1]):
+    for i in range(y.shape[1]):
         result[:, i] = proj_simplex_1d(y[:, i])
     return result
 
 
-@jit(nopython=True, parallel=True)
+@jit(nopython=True)
 def base(H, H_update_iters, M, W):
     for it in range(H_update_iters):
         H = proj_simplex(H - ((W.T @ W) @ H - W.T @ M) / np.linalg.norm(W.T @ W, ord=2))
     return H
 
 
-@jit(nopython=True, parallel=True)
+@jit(nopython=True)
 def precomputed_vars_and_nesterov_acc(H, H_update_iters, M, W):
     WtW = W.T @ W
     norm_WtW = np.linalg.norm(WtW, ord=2)

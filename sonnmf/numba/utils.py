@@ -2,35 +2,35 @@ import numpy as np
 from numba import jit, prange
 
 
-@jit(nopython=True, parallel=True)
+@jit(nopython=True)
 def frobenius_norm(A):
     """Calculates the Frobenius norm of a matrix A."""
     m, n = A.shape
     norm = 0.0
 
-    for i in prange(m):
-        for j in prange(n):
+    for i in range(m):
+        for j in range(n):
             norm += A[i, j] * A[i, j]
 
     return np.sqrt(norm)
 
 
-@jit(nopython=True, parallel=True)
+@jit(nopython=True)
 def calculate_fscore(M, W, H):
     """Calculates the Frobenius norm of the difference between M and WH."""
     diff = M - np.dot(W, H)
     return 0.5 * frobenius_norm(diff) ** 2
 
 
-@jit(nopython=True, parallel=True)
+@jit(nopython=True)
 def calculate_gscore(W):
     """Calculates the sum of the norm of the columns of W."""
     rank = W.shape[1]
     gscore = 0.0
 
-    for i in prange(rank - 1):
+    for i in range(rank - 1):
         norm_sum = 0.0
-        for j in prange(i + 1, rank):
+        for j in range(i + 1, rank):
             diff = W[:, i] - W[:, j]
             norm_sum += np.sqrt(np.dot(diff, diff))
         gscore += norm_sum
@@ -38,7 +38,7 @@ def calculate_gscore(W):
     return gscore
 
 
-@jit(nopython=True, parallel=True)
+@jit(nopython=True)
 def calculate_hscore(W):
     """Calculates the negative sum of the minimum of each element of W and 0."""
     return -np.sum(np.minimum(W, 0))
