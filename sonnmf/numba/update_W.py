@@ -27,14 +27,12 @@ def prox(mu, c, v):
 def base(H, M, W, W_update_iters, gamma, lam):
     m, rank = W.shape
     for it in range(W_update_iters):
-        Mj = M - W @ H
         for j in range(rank):
             hj = H[j:j + 1, :]
-
             hj_norm_sq = np.linalg.norm(hj) ** 2
             wj = W[:, j:j + 1]
 
-            Mj = Mj + wj @ hj
+            Mj = M - W @ H + wj @ hj
             w_bar = (Mj @ hj.T) / (hj_norm_sq + EPS)
             alpha = (rank - 1) * lam + gamma
             prox_pen = rowwise_median(np.hstack((w_bar + (gamma / (hj_norm_sq + EPS)), np.zeros((m, 1)), w_bar)))
@@ -45,5 +43,4 @@ def base(H, M, W, W_update_iters, gamma, lam):
                     prox_w_sum += prox(lam / (hj_norm_sq + EPS), W[:, k:k + 1], w_bar)
 
             W[:, j:j + 1] = (lam * prox_w_sum + gamma * prox_pen) / alpha
-            Mj = Mj - wj @ hj
     return W
