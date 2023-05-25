@@ -6,7 +6,7 @@ EARLY_STOP_TOL = 1e-6
 
 
 @jit(nopython=True)
-def sonnmf(M, W, H, lam=0.0, gamma=0.0, itermin=100, itermax=10000, H_update_iters=1,
+def sonnmf(M, W, H, lam=0.0, gamma=0.0, itermin=500, itermax=10000, H_update_iters=1,
            W_update_iters=100, accelerate_H_update=False, early_stop=True, verbose=False):
     """
     Performs non-negative matrix factorization with penalties on W and H.
