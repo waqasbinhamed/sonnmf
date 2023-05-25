@@ -51,7 +51,7 @@ def calculate_scores_and_report(H, M, W, fscores, gamma, gscores, hscores, it, l
     hscores[it] = calculate_hscore(W)
     total_scores[it] = fscores[it] + lam * gscores[it] + gamma * hscores[it]
     if verbose:
-        print(fscores[it], gscores[it], hscores[it], total_scores[it])
+        print(it, fscores[it], gscores[it], hscores[it], total_scores[it])
     # if verbose:
     #     print(f'Iteration: {it}, f={fscores[it]}, g={gscores[it]}, h={hscores[it]}, total={total_scores[it]}')
 
