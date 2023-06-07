@@ -68,4 +68,4 @@ def sonnmf(M, W, H, O, lam=0.0, gamma=0.0, beta=0.0, itermin=500, itermax=10000,
                 print(f'Early stopping condition reached at iteration {it}.')
                 break
 
-    return W, H, fscores[:it + 1], gscores[:it + 1], hscores[:it + 1], iscores[:it + 1], total_scores[:it + 1]
+    return W, H, O, fscores[:it + 1], gscores[:it + 1], hscores[:it + 1], iscores[:it + 1], total_scores[:it + 1]
