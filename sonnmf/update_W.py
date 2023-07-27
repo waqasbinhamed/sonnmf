@@ -26,3 +26,4 @@ def base(H, M, W, W_update_iters, gamma, lam):
                 np.array([prox(lam / (hj_norm_sq + EPS), W[:, k:k + 1], w_bar) for k in range(rank) if k != j]), axis=0)
 
             W[:, j:j + 1] = (lam * prox_w_sum + gamma * prox_pen) / alpha
+    return W

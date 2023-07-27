@@ -1,7 +1,6 @@
 import numpy as np
-from sonnmf.old.utils import non_neg
 
-EPS = 1e-12
+EPS = 1e-16
 W_TOL = 1e-6
 
 
@@ -43,8 +42,8 @@ def subgrad(W, Mj, z, hj, j, lam, itermax=1000):
 
         # simple line search
         t = line_search(z, diff_wis_norm, hj_norm_sq, MhT, lam, grad)
-        new_z = non_neg(z - t * grad)
-
+        new_z = np.minimum(z - t * grad, 0)
+        
         if np.linalg.norm(z - new_z) / (np.linalg.norm(z) + EPS) < W_TOL:
             break
     return new_z
@@ -69,7 +68,7 @@ def nesterov_smoothing(W, Mj, new_z, hj, j, lam, mu=1, itermax=1000):
         grad = hj_norm_sq * z - MhT + np.sum(tmp_arr, axis=1).reshape(m, 1)
         t = line_search(z, z - wi_arr, hj_norm_sq, MhT, lam, grad)
 
-        new_z = non_neg(z - t * grad)
+        new_z = np.minimum(z - t * grad, 0)
 
         if np.linalg.norm(z - new_z) / (np.linalg.norm(z) + EPS) < W_TOL:
             break
@@ -97,7 +96,7 @@ def admm(W, Mj, new_z, hj, j, _lam, itermax=1000):
         yi_arr = new_yi_arr
 
         new_wf = (Mj @ hj.T - yf + rho * z) / (rho + hj_norm_sq)
-        new_w0 = non_neg(z - y0 / rho)
+        new_w0 = np.maximum(z - y0 / rho, 0)
 
         zeta_arr = z - yi_arr / rho
         tmp_arr = zeta_arr / _lam - ci_arr
@@ -135,7 +134,7 @@ def prox_avg(W, Mj, hj, j, _lam):
         if k != j:
             prox_w_sum += prox(_lam / (hj_norm_sq * rank), W[:, k: k + 1], w_bar)
 
-    prox_in = non_neg(w_bar)
+    prox_in = np.minimum(w_bar, 0)
     return (prox_w_sum + prox_in) / rank
 
 
@@ -154,66 +153,25 @@ def without_nonneg_restriction(W, Mj, hj, j, _lam):
     return prox_w_sum / (rank - 1)
 
 
-def prox_avg_with_penalty(W, Mj, hj, j, _lam, gamma):
-    m, rank = W.shape
-    hj_norm_sq = hj @ hj.T
-    w_bar = (Mj @ hj.T) / (hj_norm_sq + EPS)
-    alpha = (rank - 1) * _lam + gamma
-    prox_pen = np.median(np.hstack((w_bar + (gamma / hj_norm_sq), np.zeros((m, 1)), w_bar)), axis=1,
-                         keepdims=True)
-
-    prox_w_sum = 0
-    for k in range(rank):
-        if k != j:
-            prox_w_sum += prox(_lam / hj_norm_sq, W[:, k: k + 1], w_bar)
-
-    return (_lam * prox_w_sum + gamma * prox_pen) / alpha
-
-
-def update_matrix(M, W, H, _lam, method='proximal_averaging', iters=1):
+def base(method, H, M, W, W_update_iters, lam):
     _, rank = W.shape
 
     # TODO: add convergence check
-    for it in range(iters):
-        Mj = M - W @ H
+    for it in range(W_update_iters):
         for j in range(rank):
             wj = W[:, j: j + 1]
             hj = H[j: j + 1, :]
-            Mj = Mj + wj @ hj
-            if method == 'proximal_averaging':
-                W[:, j: j + 1] = wj = prox_avg(W, Mj, hj, j, _lam)
-            elif method == 'admm':
-                W[:, j: j + 1] = wj = admm(W, Mj, wj, hj, j, _lam)
-            elif method == 'subgradient':
-                W[:, j: j + 1] = wj = subgrad(W, Mj, wj, hj, j, _lam)
-            elif  method == 'nesterov_smoothing':
-                W[:, j: j + 1] = wj = nesterov_smoothing(W, Mj, wj, hj, j, _lam)
-            elif method == 'without_nonneg_restriction':
-                W[:, j: j + 1] = wj = without_nonneg_restriction(W, Mj, hj, j, _lam)
-            else:
-                raise ValueError('Unknown method specified for solving the w_j subproblem. Please specify one of the following: proximal_averaging, admm, subgradient, nesterov_smoothing')
-
-            Mj = Mj - wj @ hj
-    
-    return W
-
-
-def update_matrix_with_penalty(M, W, H, _lam, gamma, wj_iters=1000):
-    _, rank = W.shape
-
-    for j in range(rank):
-        hj = H[j: j + 1, :]
-
-        old_wj = wj = W[:, j: j + 1]
-        for it in range(wj_iters):
             Mj = M - W @ H + wj @ hj
-            wj = prox_avg_with_penalty(W, Mj, hj, j, _lam, gamma)
-
-            if np.linalg.norm(wj - old_wj) / np.linalg.norm(old_wj) < W_TOL:
-                break
-            old_wj = wj
-
-
-        W[:, j: j + 1] = wj
-        # Mj = Mj - wj @ hj
+            if method == 'proximal_averaging':
+                W[:, j: j + 1] = wj = prox_avg(W, Mj, hj, j, lam)
+            elif method == 'admm':
+                W[:, j: j + 1] = wj = admm(W, Mj, wj, hj, j, lam)
+            elif method == 'subgradient':
+                W[:, j: j + 1] = wj = subgrad(W, Mj, wj, hj, j, lam)
+            elif  method == 'nesterov_smoothing':
+                W[:, j: j + 1] = wj = nesterov_smoothing(W, Mj, wj, hj, j, lam)
+            elif method == 'without_nonneg_restriction':
+                W[:, j: j + 1] = wj = without_nonneg_restriction(W, Mj, hj, j, lam)
+            else:
+                raise ValueError('Unknown method specified for solving the w_j subproblem.')
     return W

@@ -5,7 +5,7 @@ EARLY_STOP_TOL = 1e-6
 
 
 def sonnmf(M, W, H, lam=0.0, gamma=0.0, itermin=500, itermax=10000, H_update_iters=1,
-           W_update_iters=100, accelerate_H_update=False, early_stop=True, verbose=False):
+           W_update_iters=10, accelerate_H_update=False, early_stop=True, verbose=False):
     """
     Performs non-negative matrix factorization with penalties on W and H.
 
@@ -44,7 +44,7 @@ def sonnmf(M, W, H, lam=0.0, gamma=0.0, itermin=500, itermax=10000, H_update_ite
             H = base_H_func(H, H_update_iters, M, W)
 
         # update W
-        base_W(H, M, W, W_update_iters, gamma, lam)
+        W = base_W(H, M, W, W_update_iters, gamma, lam)
 
         calculate_scores_and_report(H, M, W, fscores, gamma, gscores, hscores, it, lam, total_scores, verbose)
 
