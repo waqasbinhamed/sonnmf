@@ -42,7 +42,7 @@ def subgrad(W, Mj, z, hj, j, lam, itermax=1000):
 
         # simple line search
         t = line_search(z, diff_wis_norm, hj_norm_sq, MhT, lam, grad)
-        new_z = np.minimum(z - t * grad, 0)
+        new_z = np.maximum(z - t * grad, 0)
         
         if np.linalg.norm(z - new_z) / (np.linalg.norm(z) + EPS) < W_TOL:
             break
@@ -68,7 +68,7 @@ def nesterov_smoothing(W, Mj, new_z, hj, j, lam, mu=1, itermax=1000):
         grad = hj_norm_sq * z - MhT + np.sum(tmp_arr, axis=1).reshape(m, 1)
         t = line_search(z, z - wi_arr, hj_norm_sq, MhT, lam, grad)
 
-        new_z = np.minimum(z - t * grad, 0)
+        new_z = np.maximum(z - t * grad, 0)
 
         if np.linalg.norm(z - new_z) / (np.linalg.norm(z) + EPS) < W_TOL:
             break
@@ -132,7 +132,7 @@ def prox_avg(W, Mj, hj, j, _lam):
     prox_w_sum = 0
     for k in range(rank):
         if k != j:
-            prox_w_sum += prox(_lam / (hj_norm_sq * rank), W[:, k: k + 1], w_bar)
+            prox_w_sum += prox(_lam / ((hj_norm_sq * rank) + EPS), W[:, k: k + 1], w_bar)
 
     prox_in = np.minimum(w_bar, 0)
     return (prox_w_sum + prox_in) / rank
@@ -162,7 +162,7 @@ def base(method, H, M, W, W_update_iters, lam):
             wj = W[:, j: j + 1]
             hj = H[j: j + 1, :]
             Mj = M - W @ H + wj @ hj
-            if method == 'proximal_averaging':
+            if method == 'proximal_avg_with_indicator_func':
                 W[:, j: j + 1] = wj = prox_avg(W, Mj, hj, j, lam)
             elif method == 'admm':
                 W[:, j: j + 1] = wj = admm(W, Mj, wj, hj, j, lam)
