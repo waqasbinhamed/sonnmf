@@ -1,5 +1,5 @@
 import numpy as np
-from numba import jit, prange
+from numba import jit
 
 
 @jit(nopython=True)
@@ -52,9 +52,6 @@ def calculate_scores_and_report(H, M, W, fscores, gamma, gscores, hscores, it, l
     total_scores[it] = fscores[it] + lam * gscores[it] + gamma * hscores[it]
     if verbose:
         print(it, fscores[it], gscores[it], hscores[it], total_scores[it])
-    # if verbose:
-    #     print(f'Iteration: {it}, f={fscores[it]}, g={gscores[it]}, h={hscores[it]}, total={total_scores[it]}')
-
 
 @jit(nopython=True)
 def ini_sonnmf(itermax):
