@@ -10,7 +10,7 @@ EARLY_STOP_TOL = 1e-6
 def sonnmf(M, W, H, lam=0.0, gamma=0.0, itermin=200, itermax=1000, max_minutes=60, H_update_iters=1,
            W_update_iters=10, accelerate_H_update=False, early_stop=True, verbose=False):
 
-    start_time = time.time()
+    # start_time = time.time()
 
     fscores, gscores, hscores, total_scores = ini_sonnmf(itermax)
 
@@ -33,8 +33,8 @@ def sonnmf(M, W, H, lam=0.0, gamma=0.0, itermin=200, itermax=1000, max_minutes=6
             if abs(total_scores[it] - total_scores[it - 1]) / total_scores[it - 1] < EARLY_STOP_TOL:
                 print(f'Early stopping condition reached at iteration {it}.')
                 break
-        if time.time() - start_time > max_minutes * 60:
-            print(f'Time limit ({max_minutes} minutes) reached at iteration {it}.')
-            break
+        # if time.time() - start_time > max_minutes * 60:
+        #     print(f'Time limit ({max_minutes} minutes) reached at iteration {it}.')
+        #     break
 
     return W, H, fscores[:it + 1], gscores[:it + 1], hscores[:it + 1], total_scores[:it + 1]
