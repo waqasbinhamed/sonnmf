@@ -1,0 +1,4 @@
+Dataset,Method,Time Taken,Save Filepath
+sythetic_r8,proxavg,22.29576086997986,../saved_models/synthetic/r8_l1e-06_g1.5_it1000_proxavg.npz
+sythetic_r8,admm,1094.1843938827515,../saved_models/synthetic/r8_l1e-06_it1000_admm.npz
+sythetic_r8,nesterov_smoothing,497.1603350639343,../saved_models/synthetic/r8_l1e-06_it1000_nesterov.npz
