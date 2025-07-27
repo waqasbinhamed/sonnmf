@@ -1,13 +1,11 @@
 import time
-from numba import jit
-from sonnmf.numba.utils import ini_sonnmf, calculate_scores_and_report
-from sonnmf.numba.update_H import update_h_basic, update_h_nesterov
-from sonnmf.numba.update_W import update_w_basic
+from sonnmf.core.utils import ini_sonnmf, calculate_scores_and_report
+from sonnmf.core.update_H import update_h_basic, update_h_nesterov
+from sonnmf.core.update_W import update_w_basic
 
 EARLY_STOP_TOLERANCE = 1e-6
 
 
-@jit(nopython=True)
 def sonnmf(M, W, H, lam=0.0, gamma=0.0, itermin=200, itermax=1000, max_minutes=60, H_update_iters=1,
            W_update_iters=10, accelerate_H_update=False, early_stop=True, verbose=False):
     """

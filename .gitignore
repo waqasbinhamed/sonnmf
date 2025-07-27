@@ -4,3 +4,5 @@ sonnmf/old/__pycache__/
 experimental/.DS_Store
 .vscode/settings.json
 .DS_Store
+venv/
+.idea/

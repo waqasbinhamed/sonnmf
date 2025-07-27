@@ -1,8 +1,5 @@
 import numpy as np
-from numba import jit
 
-
-@jit(nopython=True)
 def project_to_simplex(y):
     """
     Projects a vector onto the probability simplex.
@@ -14,33 +11,9 @@ def project_to_simplex(y):
     Returns:
         np.ndarray: Projected vector.
     """
-    n = y.shape[0]
-    sorted_y = np.sort(y)[::-1]
-    cumsum_y = np.cumsum(sorted_y) - 1
-    div_range = np.arange(1, n + 1)
-    div_result = cumsum_y / div_range
-    subtracted = y - max(div_result)
-    return np.maximum(subtracted, 0)
+    return np.maximum(y - np.max((np.cumsum(-1 * np.sort(-y, axis=0), axis=0) - 1) /
+                              np.arange(1, y.shape[0] + 1).reshape(y.shape[0], 1), axis=0), 0)
 
-
-@jit(nopython=True)
-def project_columns_to_simplex(y):
-    """
-    Projects each column of a matrix onto the simplex.
-
-    Parameters:
-        y (np.ndarray): Input matrix.
-
-    Returns:
-        np.ndarray: Matrix with each column projected onto the simplex.
-    """
-    result = np.empty_like(y)
-    for i in range(y.shape[1]):
-        result[:, i] = project_to_simplex(y[:, i])
-    return result
-
-
-@jit(nopython=True)
 def update_h_basic(H, num_iters, M, W):
     """
     Updates the matrix H using a basic iterative approach.
@@ -58,11 +31,9 @@ def update_h_basic(H, num_iters, M, W):
     """
     for t in range(num_iters):
         # Compute the gradient and project onto the simplex
-        H = project_columns_to_simplex(H - ((W.T @ W) @ H - W.T @ M) / np.linalg.norm(W.T @ W, ord=2))
+        H = project_to_simplex(H - ((W.T @ W) @ H - W.T @ M) / np.linalg.norm(W.T @ W, ord=2))
     return H
 
-
-@jit(nopython=True)
 def update_h_nesterov(H, num_iters, M, W):
     """
     Updates the matrix H using precomputed variables and Nesterov acceleration.
@@ -91,7 +62,7 @@ def update_h_nesterov(H, num_iters, M, W):
     for t in range(num_iters):
         H_old = H
         # Update H using the precomputed variables
-        H = project_columns_to_simplex((Q @ V) + R)
+        H = project_to_simplex((Q @ V) + R)
         # Apply Nesterov acceleration
         V = H + ((t - 1) / (t + 2)) * (H - H_old)
     return H

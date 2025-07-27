@@ -1,27 +1,5 @@
 import numpy as np
-from numba import jit
 
-
-@jit(nopython=True)
-def frobenius_norm(A):
-    """
-    Calculates the Frobenius norm of a matrix A.
-
-    Parameters:
-        A (np.ndarray): Input matrix.
-
-    Returns:
-        float: Frobenius norm of the matrix.
-    """
-    m, n = A.shape
-    norm = 0.0
-    for i in range(m):
-        for j in range(n):
-            norm += A[i, j] * A[i, j]
-    return np.sqrt(norm)
-
-
-@jit(nopython=True)
 def calculate_fscore(M, W, H):
     """
     Calculates the Frobenius norm of the difference between M and WH.
@@ -36,11 +14,8 @@ def calculate_fscore(M, W, H):
     Returns:
         float: Frobenius norm of the difference.
     """
-    diff = M - np.dot(W, H)
-    return 0.5 * frobenius_norm(diff) ** 2
+    return 0.5 * np.linalg.norm(M - np.dot(W, H), 'fro') ** 2
 
-
-@jit(nopython=True)
 def calculate_gscore(W):
     """
     Calculates the group sparsity term for W.
@@ -54,15 +29,11 @@ def calculate_gscore(W):
         float: Group sparsity score.
     """
     rank = W.shape[1]
-    gscore = 0.0
+    gscore = 0
     for i in range(rank - 1):
-        for j in range(i + 1, rank):
-            diff = W[:, i] - W[:, j]
-            gscore += np.sqrt(np.dot(diff, diff))
+        gscore += np.sum(np.linalg.norm(W[:, i: i + 1] - W[:, i + 1:], axis=0))
     return gscore
 
-
-@jit(nopython=True)
 def calculate_hscore(W):
     """
     Calculates the non-negativity constraint violation for W.
@@ -77,8 +48,6 @@ def calculate_hscore(W):
     """
     return -np.sum(np.minimum(W, 0))
 
-
-@jit(nopython=True)
 def calculate_scores_and_report(H, M, W, fscores, gamma, gscores, hscores, it, lam, total_scores, verbose):
     """
     Calculates and reports the scores for the current iteration.
@@ -103,10 +72,8 @@ def calculate_scores_and_report(H, M, W, fscores, gamma, gscores, hscores, it, l
     hscores[it] = calculate_hscore(W)
     total_scores[it] = fscores[it] + lam * gscores[it] + gamma * hscores[it]
     if verbose:
-        print(f"Iteration: {it}, f={fscores[it]}, g={gscores[it]}, h={hscores[it]}, total={total_scores[it]}")
+        print(f'Iteration: {it}, f={fscores[it]}, g={gscores[it]}, h={hscores[it]}, total={total_scores[it]}')
 
-
-@jit(nopython=True)
 def ini_sonnmf(itermax):
     """
     Initializes score arrays for SONNMF.
