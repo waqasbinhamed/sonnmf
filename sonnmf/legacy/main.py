@@ -1,7 +1,7 @@
 import time
 from sonnmf.legacy.utils import ini_sonnmf, calculate_scores_and_report
-from sonnmf.legacy.update_H import base as update_h_basic, precomputed_vars_and_nesterov_acc as update_h_nesterov
-from sonnmf.legacy.update_W import base as update_w
+from sonnmf.legacy.update_H import update_h_basic, update_h_nesterov
+from sonnmf.legacy.update_W import update_w
 
 EARLY_STOP_TOLERANCE = 1e-6
 
