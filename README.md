@@ -22,6 +22,10 @@ The repository includes:
 - Datasets used in the evaluation (synthetic, hyperspectral, video)
 - Comparison with standard NMF
 
+**Note**: The `main` branch was refactored to improve the code readability by adding comments, restructing the code, reducing repeat code. Data files were earlier stored in `.npz`, now they are in HDF5 (`.h5`) so the data can be accessed in other languages including MATLAB.
+
+However, the algorithms and experiments are not affected by this. 
+
 ## Repository Structure
 
 ```
