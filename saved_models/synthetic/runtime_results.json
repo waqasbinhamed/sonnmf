@@ -1,0 +1,20 @@
+[
+    {
+        "Dataset": "sythetic_r8",
+        "Method": "proxavg",
+        "Time Taken (s)": 22.29576086997986,
+        "Save Filepath": "../saved_models/synthetic/rank8_lambda1e-06_gamma1.5_iters1000_proxavg.h5"
+    },
+    {
+        "Dataset": "sythetic_r8",
+        "Method": "admm",
+        "Time Taken (s)": 1094.1843938827515,
+        "Save Filepath": "../saved_models/synthetic/rank8_lambda1e-06_iters1000_admm.h5"
+    },
+    {
+        "Dataset": "sythetic_r8",
+        "Method": "nesterov_smoothing",
+        "Time Taken (s)": 497.1603350639343,
+        "Save Filepath": "../saved_models/synthetic/rank8_lambda1e-06_iters1000_nesterov.h5"
+    }
+]
