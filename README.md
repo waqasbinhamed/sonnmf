@@ -131,22 +131,6 @@ jupyter notebook
 pixel of a skeleton body “swimming". The notebook (`swimmer_experiments.ipynb`) applies NMF on this dataset.
 
 
-
-### 1. Synthetic Data
-- Comparison with vanilla NMF on controlled synthetic data
-- Evaluation of different solver algorithms (ProxAvg, ADMM, Nesterov)
-- Runtime and convergence analysis
-
-### 2. Hyperspectral Unmixing
-- **Urban dataset**: Building material identification in urban scenes
-- **Jasper Ridge**: Natural environment endmember extraction
-- Spatial coherence and sparsity evaluation
-
-### 3. Video Analysis
-- **Swimmer dataset**: Motion pattern decomposition
-- Temporal coherence analysis
-- Component importance ranking
-
 ## Algorithm Details
 
 SONNMF solves the optimization problem:
@@ -158,7 +142,7 @@ min_{W≥0,H≥0} 0.5||M - WH||²_F + λ·g(W) + γ·h(W) + i(H)
 Where:
 - `g(W)` is the sum-of-norms regularization term
 - `h(W)` is the non-negactivity constraint on W
-- `i(H)  is the non-negactivity constraint on H
+- `i(H)`  is the non-negactivity constraint on H
 - `λ, γ` are regularization parameters
 
 The algorithm uses:
