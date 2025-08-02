@@ -1,6 +1,7 @@
-sonnmf/__pycache__/
-sonnmf/numba/__pycache__/
-sonnmf/old/__pycache__/
+sonnmf/__pycache__
+sonnmf/core/__pycache__
+sonnmf/numba/__pycache__
+sonnmf/legacy/__pycache__
 experimental/.DS_Store
 .vscode/settings.json
 .DS_Store
