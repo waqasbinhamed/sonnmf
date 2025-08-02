@@ -230,7 +230,7 @@ def merge_images(images_list, filename, delete_images=False):
         for fp in images_list:
             os.remove(fp)
 
-def plot_and_merge(W, H, imgsize, figsize, fontsize, filenames, num_rows, delete=False, show_final=False):
+def plot_and_merge(W, H, imgsize, figsize, fontsize, filenames, num_rows, delete=True, show_final=False):
     """
     Create comprehensive plots and merge them into a single image.
     
