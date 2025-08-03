@@ -26,6 +26,41 @@ The repository includes:
 
 The `article` branch still stores the old version of the code. 
 
+### Algorithm Details
+
+SONNMF solves the optimization problem:
+
+```
+min_{W≥0,H≥0} 0.5||M - WH||²_F + λ·g(W) + γ·h(W) + i(H)
+```
+
+Where:
+- `g(W)` is the sum-of-norms regularization term
+- `h(W)` is the non-negactivity constraint on W
+- `i(H)`  is the non-negactivity constraint on H
+- `λ, γ` are regularization parameters
+
+The algorithm uses:
+- **Block Coordinate Descent**: Alternating optimization of W and H
+- **Proximal Averaging**: Efficient solver for the W-subproblem
+- **Projected Gradient**: Fast updates for the H-subproblem
+
+### Experiments
+
+ 1. Synthetic data (`synthetic_experiments.ipynb`) compares the algorithm against standard NMF on a toy example. It also compares the proximal averaging algorithm against other solvers for the W sub-problem.
+
+ 2. Jasper Ridge (`jasper_experiments.ipynb`) and Urban (`urban_experiments.ipynb`) demonstrate the SONNMF's application to hyperspectral unmixing.
+
+ 3. Swimmer dataset consists of 256 figures with each 20-by-11
+pixel of a skeleton body “swimming". The notebook (`swimmer_experiments.ipynb`) applies NMF on this dataset.
+
+### Data Sources
+
+ 1. **Jasper Ridge**: https://www.mathworks.com/help/images/explore-hyperspectral-and-multispectral-data-in-the-hyperspectral-viewer.html
+ 2. **Urban**: https://gitlab.com/ngillis/nmfbook/-/blob/master/data%20sets/Urban.mat
+ 3. **Swimmer**: https://gitlab.com/ngillis/nmfbook/-/blob/master/data%20sets/Swimmer.mat
+
+
 ## Repository Structure
 
 ```
@@ -36,6 +71,7 @@ sonnmf/
 │   ├── numba/              # Optimized Numba implementation
 │   └── utils.py            # Utility functions
 ├── notebooks/              # Jupyter notebooks reproducing paper results
+│   ├── data_preparation.ipynb          # Dataset preparations for experiments (mat to HDF5 conversion)
 │   ├── synthetic_experiments.ipynb     # Synthetic data experiments
 │   ├── urban_experiments.ipynb         # Urban hyperspectral data
 │   ├── jasper_experiments.ipynb        # Jasper Ridge hyperspectral data
@@ -121,35 +157,6 @@ jupyter notebook
 # - swimmer_experiments.ipynb: Swimmer image analysis
 ```
 
-## Experiments
-
- 1. Synthetic data (`synthetic_experiments.ipynb`) compares the algorithm against standard NMF on a toy example. It also compares the proximal averaging algorithm against other solvers for the W sub-problem.
-
- 2. Jasper Ridge (`jasper_experiments.ipynb`) and Urban (`urban_experiments.ipynb`) demonstrate the SONNMF's application to hyperspectral unmixing.
-
- 3. Swimmer dataset consists of 256 figures with each 20-by-11
-pixel of a skeleton body “swimming". The notebook (`swimmer_experiments.ipynb`) applies NMF on this dataset.
-
-
-## Algorithm Details
-
-SONNMF solves the optimization problem:
-
-```
-min_{W≥0,H≥0} 0.5||M - WH||²_F + λ·g(W) + γ·h(W) + i(H)
-```
-
-Where:
-- `g(W)` is the sum-of-norms regularization term
-- `h(W)` is the non-negactivity constraint on W
-- `i(H)`  is the non-negactivity constraint on H
-- `λ, γ` are regularization parameters
-
-The algorithm uses:
-- **Block Coordinate Descent**: Alternating optimization of W and H
-- **Proximal Averaging**: Efficient solver for the W-subproblem
-- **Projected Gradient**: Fast updates for the H-subproblem
-
 ## Citation
 
 If you use this code in your research, please cite our paper:
@@ -173,5 +180,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contact
 
 For questions about the paper or implementation, contact the authors:
-- Andersen Ang
-- Waqas Bin Hamed (waqasbinhamed@gmail.com)
+- [Andersen Ang](https://angms.science)
+- [Waqas Bin Hamed](mailto:waqasbinhamed@gmail.com)
+
